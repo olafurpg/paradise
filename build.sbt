@@ -102,6 +102,9 @@ lazy val testsReflect = Project(
     usePluginSettings,
     publish := {},
     publishSigned := {},
+    scalacOptions += "-Yrangepos",
+    scalacOptions += "-Ypos-debug",
+    scalacOptions += "-verbose",
     exposePaths("testsReflect", Test)
   ) dependsOn (testsCommon)
 
@@ -114,6 +117,7 @@ lazy val testsMeta = Project(
     usePluginSettings,
     publish := {},
     publishSigned := {},
+    scalacOptions += "-Yrangepos",
     exposePaths("testsMeta", Test)
   ) dependsOn (testsCommon)
 
