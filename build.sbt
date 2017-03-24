@@ -103,8 +103,8 @@ lazy val testsReflect = Project(
     publish := {},
     publishSigned := {},
     scalacOptions += "-Yrangepos",
-    scalacOptions += "-Ypos-debug",
-    scalacOptions += "-verbose",
+//    scalacOptions += "-Ypos-debug",
+//    scalacOptions += "-verbose",
     exposePaths("testsReflect", Test)
   ) dependsOn (testsCommon)
 

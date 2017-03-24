@@ -29,7 +29,7 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
     else new ParadiseUnitParser(unit).smartParse()
   }
 
-  private def focusPos(tree: Tree): Unit = {
+  def focusAllPositions(tree: Tree): Unit = {
     def loop(parent: Tree)(child: Tree): Unit = {
       logger.elem(child)
       if (child.pos.isDefined) child.setPos(child.pos.focus)
@@ -233,8 +233,8 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
               ModuleDef(NoMods,
                         name.inlineModuleName,
                         Template(List(Ident(TypeName("AnyRef"))), noSelfType, implmstats)))
-            focusPos(stat1)
-            focusPos(implmdef)
+            focusAllPositions(stat1)
+            focusAllPositions(implmdef)
             List(stat1, implmdef)
           } else {
             List(stat)

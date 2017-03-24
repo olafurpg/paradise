@@ -2,10 +2,12 @@ package org.scalameta.paradise
 package typechecker
 
 import scala.meta.internal.scalahost.converters.Converter
-import org.scalameta.paradise.parser.SyntaxAnalyzer
 
+import org.scalameta.paradise.parser.SyntaxAnalyzer
 import scala.meta.Term
 import scala.meta.dialects.Paradise211
+
+import org.scalameta.logger
 
 trait Expanders extends Converter { self: AnalyzerPlugins =>
 
@@ -32,6 +34,15 @@ trait Expanders extends Converter { self: AnalyzerPlugins =>
     val expanderErrorGen = new ErrorGen(namer.typer)
     import expanderErrorGen._
     import namer.typer.TyperErrorGen._
+    def focusAllPositions(tree: Tree): Unit = {
+      def loop(parent: Tree)(child: Tree): Unit = {
+        logger.elem(child)
+        if (child.pos.isDefined) child.setPos(child.pos.focus)
+        else child.setPos(parent.pos)
+        child.children.foreach(loop(child))
+      }
+      loop(tree)(tree)
+    }
 
     def expandOldAnnotationMacro(original: Tree,
                                  annotationSym: Symbol,
@@ -182,7 +193,9 @@ trait Expanders extends Converter { self: AnalyzerPlugins =>
           with SyntaxAnalyzer
           val parser =
             compiler.newUnitParser(new CompilationUnit(newSourceFile(stringExpansion, "<macro>")))
-          Some(gen.mkTreeOrBlock(parser.parseStatsOrPackages()))
+          val expandedGtree = gen.mkTreeOrBlock(parser.parseStatsOrPackages())
+          self.focusAllPositions(expandedGtree)
+          Some(expandedGtree)
         } catch {
           // NOTE: this means an error that has been caught and reported
           case MacroExpansionException => None
