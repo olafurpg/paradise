@@ -30,10 +30,11 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
   }
 
   private def focusPos(tree: Tree): Unit = {
-    def loop(parent: Tree)(tree: Tree): Unit = {
-      if (tree.pos.isDefined) tree.setPos(tree.pos.focus)
-      else tree.setPos(parent.pos)
-      tree.children.foreach(loop(tree))
+    def loop(parent: Tree)(child: Tree): Unit = {
+      logger.elem(child)
+      if (child.pos.isDefined) child.setPos(child.pos.focus)
+      else child.setPos(parent.pos)
+      child.children.foreach(loop(child))
     }
     loop(tree)(tree)
   }
@@ -140,7 +141,6 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
     private def translateNestedInlineDefs(tree: Tree): List[Tree] = {
       tree match {
         case stat @ ClassDef(mods, name, ctparams, templ @ Template(parents, self, stats)) =>
-          focusPos(stat)
           val xstats1 = stats.map {
             case stat @ DefDef(mods, name, mtparams, vparamss, tpt, rhs) =>
               def isInline(tpt: Tree) =
@@ -233,6 +233,8 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
               ModuleDef(NoMods,
                         name.inlineModuleName,
                         Template(List(Ident(TypeName("AnyRef"))), noSelfType, implmstats)))
+            focusPos(stat1)
+            focusPos(implmdef)
             List(stat1, implmdef)
           } else {
             List(stat)
