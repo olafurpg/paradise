@@ -2,13 +2,16 @@ package org.scalameta.paradise
 package parser
 
 import scala.language.reflectiveCalls
+
 import scala.tools.nsc.ast.parser.{SyntaxAnalyzer => NscSyntaxAnalyzer}
 import scala.tools.nsc.ast.parser.BracePatch
 import scala.tools.nsc.ast.parser.Tokens._
 import scala.tools.nsc.{Global, Phase, SubComponent}
-import scala.reflect.internal.Flags // no wildcard import because of ambiguity with Tokens._
+import scala.reflect.internal.Flags
 import scala.reflect.internal.util.Collections._
 import scala.collection.mutable.ListBuffer
+
+import org.scalameta.logger
 import org.scalameta.paradise.reflect.ReflectToolkit
 
 abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
@@ -181,7 +184,7 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
                   val implVprefixss = List(List(mkImplPrefix))
                   val implVtparamss = {
                     val tparams = mtparams ++ ctparams.filter(ctparam =>
-                        !mtparams.exists(_.name == ctparam.name))
+                      !mtparams.exists(_.name == ctparam.name))
                     if (tparams.nonEmpty) List(tparams.map(mkImplVtparam)) else Nil
                   }
                   val implVparamss = implVprefixss ++ implVtparamss ++ mmap(vparamss)(mkImplVparam)
@@ -220,6 +223,14 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
               ModuleDef(NoMods,
                         name.inlineModuleName,
                         Template(List(Ident(TypeName("AnyRef"))), noSelfType, implmstats)))
+            def removePos(parent: Tree)(tree: Tree): Unit = {
+              if (tree.pos.isDefined) tree.setPos(tree.pos.focus)
+              else tree.setPos(parent.pos)
+              tree.children.foreach(removePos(tree))
+            }
+            removePos(stat)(implmdef)
+            removePos(stat)(stat1)
+
             List(stat1, implmdef)
           } else {
             List(stat)
