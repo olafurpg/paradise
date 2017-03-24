@@ -29,6 +29,15 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
     else new ParadiseUnitParser(unit).smartParse()
   }
 
+  private def focusPos(tree: Tree): Unit = {
+    def loop(parent: Tree)(tree: Tree): Unit = {
+      if (tree.pos.isDefined) tree.setPos(tree.pos.focus)
+      else tree.setPos(parent.pos)
+      tree.children.foreach(loop(tree))
+    }
+    loop(tree)(tree)
+  }
+
   def newUnitParser(unit: CompilationUnit): UnitParser = new ParadiseUnitParser(unit)
   private class ParadiseUnitParser(unit: global.CompilationUnit, patches: List[BracePatch])
       extends UnitParser(unit, Nil) {
@@ -131,6 +140,7 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
     private def translateNestedInlineDefs(tree: Tree): List[Tree] = {
       tree match {
         case stat @ ClassDef(mods, name, ctparams, templ @ Template(parents, self, stats)) =>
+          focusPos(stat)
           val xstats1 = stats.map {
             case stat @ DefDef(mods, name, mtparams, vparamss, tpt, rhs) =>
               def isInline(tpt: Tree) =
@@ -140,28 +150,28 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
               }
               if (inlines.nonEmpty) {
                 def mkImplPrefix: ValDef = {
-                  atPos(stat.pos.focus)(
+                  atPos(stat.pos)(
                     ValDef(Modifiers(Flags.PARAM),
                            InlinePrefixParameterName,
                            Ident(MetaStatClass),
                            EmptyTree))
                 }
                 def mkImplVtparam(tdef: TypeDef): ValDef = {
-                  atPos(tdef.pos.focus)(
+                  atPos(tdef.pos)(
                     ValDef(Modifiers(Flags.PARAM),
                            tdef.name.toTermName,
                            Ident(MetaTypeClass),
                            EmptyTree))
                 }
                 def mkImplVparam(vdef: ValDef): ValDef = {
-                  atPos(vdef.pos.focus)(
+                  atPos(vdef.pos)(
                     ValDef(Modifiers(Flags.PARAM), vdef.name, Ident(MetaStatClass), EmptyTree))
                 }
                 def mkImplTpt(tpt: Tree): Tree = {
-                  atPos(tpt.pos.focus)(Ident(MetaStatClass))
+                  atPos(tpt.pos)(Ident(MetaStatClass))
                 }
                 def mkImplBody(body: Tree): Tree =
-                  atPos(body.pos.focus)({
+                  atPos(body.pos)({
                     body match {
                       case Apply(Ident(TermName("meta")), List(arg)) =>
                         object transformer extends Transformer {
@@ -223,14 +233,6 @@ abstract class SyntaxAnalyzer extends NscSyntaxAnalyzer with ReflectToolkit {
               ModuleDef(NoMods,
                         name.inlineModuleName,
                         Template(List(Ident(TypeName("AnyRef"))), noSelfType, implmstats)))
-            def removePos(parent: Tree)(tree: Tree): Unit = {
-              if (tree.pos.isDefined) tree.setPos(tree.pos.focus)
-              else tree.setPos(parent.pos)
-              tree.children.foreach(removePos(tree))
-            }
-            removePos(stat)(implmdef)
-            removePos(stat)(stat1)
-
             List(stat1, implmdef)
           } else {
             List(stat)
