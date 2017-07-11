@@ -245,7 +245,7 @@ trait ToMtree { self: Converter =>
 
               case l.TypeParamDef(lmods, lname, ltparams, ltbounds, lvbounds, lcbounds) =>
                 val mmods = lmods.toMtrees[m.Mod]
-                val mname = lname.toMtree[m.Type.Param.Name]
+                val mname = lname.toMtree[m.Type.Name]
                 val mtparams = ltparams.toMtrees[m.Type.Param]
                 val mtbounds = ltbounds.toMtree[m.Type.Bounds]
                 val mvbounds = lvbounds.toMtrees[m.Type]
@@ -260,14 +260,14 @@ trait ToMtree { self: Converter =>
 
               case l.PatVarType(lname) =>
                 val mname = lname.toMtree[m.Type.Name]
-                m.Pat.Var.Type(mname)
+                m.Type.Var(mname)
 
               case l.PatWildcard() =>
                 m.Pat.Wildcard()
 
               case l.PatBind(llhs, lrhs) =>
                 val mlhs = llhs.toMtree[m.Pat.Var]
-                val mrhs = lrhs.toMtree[m.Pat.Arg]
+                val mrhs = lrhs.toMtree[m.Pat]
                 // NOTE: This pattern match goes against the rules of ToMtree.
                 // Typically, the idea is that all non-trivial logic goes into extractors in LogicalTree.
                 // However, in this case, that'd be too complicated engineering-wise, so I make an exception.
@@ -288,7 +288,7 @@ trait ToMtree { self: Converter =>
               case l.PatExtract(lref, ltargs, largs) =>
                 val mref = lref.toMtree[m.Term.Ref]
                 val mtargs = ltargs.toMtrees[m.Type.Var]
-                val margs = largs.toMtrees[m.Pat.Arg]
+                val margs = largs.toMtrees[m.Pat]
                 m.Pat.Extract(mref, mtargs, margs)
 
               case l.PatInterpolate(lprefix, lparts, largs) =>
@@ -473,7 +473,7 @@ trait ToMtree { self: Converter =>
                 val mname = m.Name.Anonymous()
                 val mparamss = lparamss.toMtreess[m.Term.Param]
                 val mbody = lbody.toMtree[m.Term]
-                m.Ctor.Secondary(mmods, mname, mparamss, mbody)
+                m.Ctor.Secondary(mmods, mname, mparamss, Nil, mbody)
 
               case l.CtorName(lvalue) =>
                 m.Name(lvalue)
