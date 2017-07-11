@@ -145,7 +145,7 @@ trait ToMtree { self: Converter =>
                 m.Term.Placeholder()
 
               case l.TermNew(ltempl) =>
-                val mtempl = ltempl.toMtree[m.Template]
+                val mtempl = ltempl.toMtree[m.Init]
                 m.Term.New(mtempl)
 
               case l.TermEta(lexpr) =>
