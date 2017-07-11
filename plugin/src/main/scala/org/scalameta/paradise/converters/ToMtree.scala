@@ -2,7 +2,6 @@ package org.scalameta.paradise
 package converters
 
 import scala.collection.{immutable, mutable}
-import scala.collection.immutable.Seq
 import scala.reflect.{classTag, ClassTag}
 import scala.compat.Platform.EOL
 import scala.meta.prettyprinters._
@@ -164,7 +163,7 @@ trait ToMtree { self: Converter =>
 
               case l.TermParamDef(lmods, lname, ltpt, ldefault) =>
                 val mmods = lmods.toMtrees[m.Mod]
-                val mname = lname.toMtree[m.Term.Param.Name]
+                val mname = lname.toMtree[m.Name]
                 val mtpt = ltpt.toMtreeopt[m.Type.Arg]
                 val mdefault = ldefault.toMtreeopt[m.Term]
                 m.Term.Param(mmods, mname, mtpt, mdefault)
@@ -499,7 +498,7 @@ trait ToMtree { self: Converter =>
                 })
 
               case l.Self(lname, ltpt) =>
-                val mname = lname.toMtree[m.Term.Param.Name]
+                val mname = lname.toMtree[m.Name]
                 val mtpt = if (ltpt.nonEmpty) Some(ltpt.toMtree[m.Type]) else None
                 m.Term.Param(Nil, mname, mtpt, None)
 
@@ -509,9 +508,9 @@ trait ToMtree { self: Converter =>
                 // scala.reflect uses Term.New here, but we need only its parent
                 val m.Term.New(
                   m.Template(Nil,
-                             Seq(mparent),
+                             List(mparent),
                              m.Term.Param(Nil, m.Name.Anonymous(), None, None),
-                             None)) =
+                             Nil)) =
                   lapply.toMtree[m.Term.New]
                 m.Mod.Annot(mparent)
 
@@ -601,11 +600,11 @@ trait ToMtree { self: Converter =>
       }
 
       implicit class RichTreesToMtrees(gtrees: List[g.Tree]) {
-        def toMtrees[T <: m.Tree: ClassTag]: Seq[T] = gtrees.map(_.toMtree[T])
+        def toMtrees[T <: m.Tree: ClassTag]: List[T] = gtrees.map(_.toMtree[T])
       }
 
       implicit class RichTreessToMtreess(gtreess: List[List[g.Tree]]) {
-        def toMtreess[T <: m.Tree: ClassTag]: Seq[Seq[T]] = gtreess.map(_.toMtrees[T])
+        def toMtreess[T <: m.Tree: ClassTag]: List[List[T]] = gtreess.map(_.toMtrees[T])
       }
 
       var backtrace = List[g.Tree]()
