@@ -117,7 +117,7 @@ trait Expanders extends Converter { self: AnalyzerPlugins =>
                 abort(
                   "Something unexpected happened. Please report to https://github.com/scalameta/paradise/issues.")
               case tree :: Nil => tree
-              case list @ _ :: tail => m.Term.Block(list.asInstanceOf[Seq[m.Stat]])
+              case list @ _ :: tail => m.Term.Block(list)
             }
             List(prefixArg) ++ targsArgs ++ vargssArgs ++ List(expandeesArg)
           }
