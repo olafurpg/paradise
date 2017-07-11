@@ -300,28 +300,28 @@ trait ToMtree { self: Converter =>
               case l.PatTyped(llhs, lrhs) =>
                 val mlrhs = llhs.toMtree[m.Pat]
                 val mrhs = lrhs.toMtree[m.Pat.Type]
-                m.Pat.Typed(mlrhs, mrhs)
+                m.Type.Var(mlrhs, mrhs)
 
               case l.PatArgSeqWildcard() =>
                 m.Pat.SeqWildcard()
 
               case l.PatTypeWildcard() =>
-                m.Pat.Type.Wildcard()
+                m.Type.Var()
 
               case l.PatTypeAnnotate(ltpe, lannots) =>
                 val mtpe = ltpe.toMtree[m.Pat.Type]
                 val mannots = lannots.toMtrees[m.Mod.Annot]
-                m.Pat.Type.Annotate(mtpe, mannots)
+                m.Type.Var(mtpe, mannots)
 
               case l.PatTypeApply(ltpt, largs) =>
                 val mtpt = ltpt.toMtree[m.Pat.Type]
                 val margs = largs.toMtrees[m.Pat.Type]
-                m.Pat.Type.Apply(mtpt, margs)
+                m.Type.Var(mtpt, margs)
 
               case l.PatTypeWith(llhs, lrhs) =>
                 val mlhs = llhs.toMtree[m.Pat.Type]
                 val mrhs = lrhs.toMtree[m.Pat.Type]
-                m.Pat.Type.With(mlhs, mrhs)
+                m.Type.Var(mlhs, mrhs)
 
               // ============ LITERALS ============
               case l.Literal(null) =>
