@@ -384,11 +384,11 @@ class LogicalTrees[G <: Global](val global: G, root: G#Tree) extends ReflectTool
       case g.Apply(g.Select(g.New(tpt), nme.CONSTRUCTOR), args) =>
         val lparent = l.Parent(g.Apply(tpt, args))
         val lself = l.Self(l.AnonymousName(), g.TypeTree())
-        Some(l.Template(Nil, List(lparent), lself, None))
+        Some(l.Template(Nil, List(lparent), lself, Nil))
       case g.Select(g.New(tpt), nme.CONSTRUCTOR) =>
         val lparent = l.Parent(tpt)
         val lself = l.Self(l.AnonymousName(), g.TypeTree())
-        Some(l.Template(Nil, List(lparent), lself, None))
+        Some(l.Template(Nil, List(lparent), lself,  Nil))
       case g.Block(List(
                      tree @ g
                        .ClassDef(g.Modifiers(Gflags.FINAL, g.tpnme.EMPTY, Nil),
@@ -1106,7 +1106,7 @@ class LogicalTrees[G <: Global](val global: G, root: G#Tree) extends ReflectTool
       tree.stats match {
         case PackageObject(lstats) :: Nil =>
           val lself = l.Self(l.AnonymousName(), g.TypeTree())
-          Some((l.Modifiers(tree), l.TermName(tree), l.Template(Nil, Nil, lself, Some(lstats))))
+          Some((l.Modifiers(tree), l.TermName(tree), l.Template(Nil, Nil, lself, lstats)))
         case _ => None
       }
     }
@@ -1226,7 +1226,7 @@ class LogicalTrees[G <: Global](val global: G, root: G#Tree) extends ReflectTool
   case class Template(early: List[g.Tree],
                       parents: List[g.Tree],
                       self: l.Self,
-                      stats: Option[List[g.Tree]])
+                      stats: List[g.Tree])
       extends Tree
   object Template {
     def apply(tree: g.ImplDef): l.Template = {
@@ -1300,7 +1300,7 @@ class LogicalTrees[G <: Global](val global: G, root: G#Tree) extends ReflectTool
           l.Parent(argss.foldLeft(applied.callee)((curr, args) => g.Apply(curr, args)))
       }
       val lstats = if (userDefinedStats.nonEmpty) Some(templateStats(userDefinedStats)) else None
-      l.Template(edefs, lparents, lself, lstats)
+      l.Template(edefs, lparents, lself, lstats.getOrElse(Nil))
     }
   }
 

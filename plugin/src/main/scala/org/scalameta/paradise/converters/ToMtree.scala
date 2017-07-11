@@ -485,7 +485,7 @@ trait ToMtree { self: Converter =>
               case l.Template(learly, lparents, lself, lstats) =>
                 val mearly = learly.toMtrees[m.Stat]
                 val mparents = lparents.toMtrees[m.Ctor.Call]
-                val mself = lself.toMtree[m.Term.Param]
+                val mself = lself.toMtree[m.Self]
                 val mstats = lstats.map(_.toMtrees[m.Stat])
                 m.Template(mearly, mparents, mself, mstats)
 
