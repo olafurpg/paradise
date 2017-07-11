@@ -256,7 +256,7 @@ trait ToMtree { self: Converter =>
 
               case l.PatVarTerm(lname) =>
                 val mname = lname.toMtree[m.Term.Name]
-                m.Pat.Var.Term(mname)
+                m.Pat.Var(mname)
 
               case l.PatVarType(lname) =>
                 val mname = lname.toMtree[m.Type.Name]
@@ -266,7 +266,7 @@ trait ToMtree { self: Converter =>
                 m.Pat.Wildcard()
 
               case l.PatBind(llhs, lrhs) =>
-                val mlhs = llhs.toMtree[m.Pat.Var.Term]
+                val mlhs = llhs.toMtree[m.Pat.Var]
                 val mrhs = lrhs.toMtree[m.Pat.Arg]
                 // NOTE: This pattern match goes against the rules of ToMtree.
                 // Typically, the idea is that all non-trivial logic goes into extractors in LogicalTree.
@@ -352,13 +352,13 @@ trait ToMtree { self: Converter =>
               // ============ DECLS ============
               case l.DeclVal(lmods, lpats, ldecltpe) =>
                 val mmods = lmods.toMtrees[m.Mod]
-                val mpats = lpats.toMtrees[m.Pat.Var.Term]
+                val mpats = lpats.toMtrees[m.Pat.Var]
                 val mdecltpe = ldecltpe.toMtree[m.Type]
                 m.Decl.Val(mmods, mpats, mdecltpe)
 
               case l.DeclVar(lmods, lpats, ldecltpe) =>
                 val mmods = lmods.toMtrees[m.Mod]
-                val mpats = lpats.toMtrees[m.Pat.Var.Term]
+                val mpats = lpats.toMtrees[m.Pat.Var]
                 val mdecltpe = ldecltpe.toMtree[m.Type]
                 m.Decl.Var(mmods, mpats, mdecltpe)
 
