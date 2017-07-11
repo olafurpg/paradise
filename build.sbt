@@ -6,7 +6,7 @@ import scala.xml.transform.{RewriteRule, RuleTransformer}
 import org.scalameta.os
 
 lazy val LanguageVersions = Seq("2.11.11", "2.12.2")
-lazy val MetaVersion = "1.8.0"
+lazy val MetaVersion = "1.9.0-1013-c351d2c2"
 lazy val LanguageVersion = LanguageVersions.head
 lazy val LibraryVersion = sys.props.getOrElseUpdate("paradise.version", os.version.preRelease())
 
