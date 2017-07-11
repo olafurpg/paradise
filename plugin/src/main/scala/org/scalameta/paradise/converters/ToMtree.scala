@@ -59,14 +59,14 @@ trait ToMtree { self: Converter =>
 
               case l.TermApply(lfun, largs) =>
                 val mfun = lfun.toMtree[m.Term]
-                val margs = largs.toMtrees[m.Term.Arg]
+                val margs = largs.toMtrees[m.Term]
                 m.Term.Apply(mfun, margs)
 
               case l.TermApplyInfix(llhs, lop, ltargs, largs) =>
                 val mlhs = llhs.toMtree[m.Term]
                 val mop = lop.toMtree[m.Term.Name]
                 val mtargs = ltargs.toMtrees[m.Type]
-                val margs = largs.toMtrees[m.Term.Arg]
+                val margs = largs.toMtrees[m.Term]
                 m.Term.ApplyInfix(mlhs, mop, mtargs, margs)
 
               case l.TermApplyType(lfun, ltargs) =>
@@ -154,12 +154,12 @@ trait ToMtree { self: Converter =>
 
               case l.TermArg.Named(lname, lrhs) =>
                 val mname = lname.toMtree[m.Term.Name]
-                val mrhs = lrhs.toMtree[m.Term.Arg]
-                m.Term.Arg.Named(mname, mrhs)
+                val mrhs = lrhs.toMtree[m.Term]
+                m.Term.Named(mname, mrhs)
 
               case l.TermArg.Repeated(lident) =>
                 val mterm = lident.toMtree[m.Term]
-                m.Term.Arg.Repeated(mterm)
+                m.Term.Repeated(mterm)
 
               case l.TermParamDef(lmods, lname, ltpt, ldefault) =>
                 val mmods = lmods.toMtrees[m.Mod]
@@ -492,7 +492,7 @@ trait ToMtree { self: Converter =>
               case l.Parent(ltpt, lctor, largss) =>
                 val mtpt = ltpt.toMtree[m.Type]
                 val mctor = mtpt.ctorRef(lctor.toMtree[m.Ctor.Name])
-                val margss = largss.toMtreess[m.Term.Arg]
+                val margss = largss.toMtreess[m.Term]
                 margss.foldLeft(mctor)((mcurr, margs) => {
                   m.Term.Apply(mcurr, margs)
                 })
