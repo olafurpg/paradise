@@ -192,7 +192,7 @@ trait ToMtree { self: Converter =>
 
               case l.TypeArgByName(ltpe) =>
                 val mtpe = ltpe.toMtree[m.Type]
-                m.Type.Arg.ByName(mtpe)
+                m.Type.ByName(mtpe)
 
               case l.TypeArgRepeated(ltpe) =>
                 val mtpe = ltpe.toMtree[m.Type]
@@ -303,7 +303,7 @@ trait ToMtree { self: Converter =>
                 m.Pat.Typed(mlrhs, mrhs)
 
               case l.PatArgSeqWildcard() =>
-                m.Pat.Arg.SeqWildcard()
+                m.Pat.SeqWildcard()
 
               case l.PatTypeWildcard() =>
                 m.Pat.Type.Wildcard()
