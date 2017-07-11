@@ -433,7 +433,7 @@ trait ToMtree { self: Converter =>
                 val mctor = {
                   // TODO: This conditional expression is non-idiomatic.
                   // We should strive to move all non-trivial logic to LogicalTrees.
-                  if (lctor == g.EmptyTree) m.Ctor.Primary(Nil, m.Ctor.Name("this"), Nil)
+                  if (lctor == g.EmptyTree) m.Ctor.Primary(Nil, m.Name.Anonymous(), Nil)
                   else lctor.toMtree[m.Ctor.Primary]
                 }
                 val mimpl = limpl.toMtree[m.Template]
@@ -463,22 +463,22 @@ trait ToMtree { self: Converter =>
               case l.PrimaryCtorDef(lmods, lname, lparamss) =>
                 val mmods = lmods.toMtrees[m.Mod]
                 // TODO: fixme https://github.com/xeno-by/scalameta/blob/7b9632ff889268a1c8c7c71432998e553146eab0/scalameta/parsers/src/main/scala/scala/meta/internal/parsers/ScalametaParser.scala#L3096
-                // val mname = lname.toMtree[m.Ctor.Name]
-                val mname = m.Ctor.Name("this")
+                // val mname = lname.toMtree[m.Name]
+                val mname = m.Name.Anonymous()
                 val mparamss = lparamss.toMtreess[m.Term.Param]
                 m.Ctor.Primary(mmods, mname, mparamss)
 
               case l.SecondaryCtorDef(lmods, lname, lparamss, lbody) =>
                 val mmods = lmods.toMtrees[m.Mod]
-                val mname = m.Ctor.Name("this")
+                val mname = m.Name.Anonymous()
                 val mparamss = lparamss.toMtreess[m.Term.Param]
                 val mbody = lbody.toMtree[m.Term]
                 m.Ctor.Secondary(mmods, mname, mparamss, mbody)
 
               case l.CtorName(lvalue) =>
-                m.Ctor.Name(lvalue)
+                m.Name(lvalue)
               case l.CtorIdent(lname) =>
-                lname.toMtree[m.Ctor.Name]
+                lname.toMtree[m.Name]
 
               // ============ TEMPLATES ============
 
@@ -491,7 +491,7 @@ trait ToMtree { self: Converter =>
 
               case l.Parent(ltpt, lctor, largss) =>
                 val mtpt = ltpt.toMtree[m.Type]
-                val mctor = mtpt.ctorRef(lctor.toMtree[m.Ctor.Name])
+                val mctor = mtpt.ctorRef(lctor.toMtree[m.Name])
                 val margss = largss.toMtreess[m.Term]
                 margss.foldLeft(mctor)((mcurr, margs) => {
                   m.Term.Apply(mcurr, margs)
