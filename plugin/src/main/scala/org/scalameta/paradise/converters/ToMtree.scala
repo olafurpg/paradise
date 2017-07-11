@@ -33,12 +33,12 @@ trait ToMtree { self: Converter =>
               // ============ TERMS ============
 
               case l.TermThis(lname) =>
-                val mname = lname.toMtree[m.Name.Qualifier]
+                val mname = lname.toMtree[m.Name]
                 m.Term.This(mname)
 
               case l.TermSuper(lthis, lsuper) =>
-                val mthis = lthis.toMtree[m.Name.Qualifier]
-                val msuper = lsuper.toMtree[m.Name.Qualifier]
+                val mthis = lthis.toMtree[m.Name]
+                val msuper = lsuper.toMtree[m.Name]
                 m.Term.Super(mthis, msuper)
 
               case l.TermName(lvalue) =>
@@ -516,11 +516,11 @@ trait ToMtree { self: Converter =>
                 m.Mod.Annot(mparent)
 
               case l.Private(lwithin) =>
-                val mwithin = lwithin.toMtree[m.Name.Qualifier]
+                val mwithin = lwithin.toMtree[m.Name]
                 m.Mod.Private(mwithin)
 
               case l.Protected(lwithin) =>
-                val mwithin = lwithin.toMtree[m.Name.Qualifier]
+                val mwithin = lwithin.toMtree[m.Name]
                 m.Mod.Protected(mwithin)
 
               case l.Implicit() =>
