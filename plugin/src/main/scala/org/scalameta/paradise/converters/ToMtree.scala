@@ -325,7 +325,7 @@ trait ToMtree { self: Converter =>
 
               // ============ LITERALS ============
               case l.Literal(null) =>
-                m.Lit.Null(null)
+                m.Lit.Null()
               case l.Literal(value: Int) =>
                 m.Lit.Int(value)
               case l.Literal(value: Double) =>
@@ -343,7 +343,7 @@ trait ToMtree { self: Converter =>
               case l.Literal(value: Boolean) =>
                 m.Lit.Boolean(value)
               case l.Literal(value: Unit) =>
-                m.Lit.Unit(value)
+                m.Lit.Unit()
               case l.Literal(value: String) =>
                 m.Lit.String(value)
               case l.Literal(value: scala.Symbol) =>
