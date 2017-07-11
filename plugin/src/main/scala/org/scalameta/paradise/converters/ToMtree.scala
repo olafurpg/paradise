@@ -120,7 +120,7 @@ trait ToMtree { self: Converter =>
                 val mexpr = lexpr.toMtree[m.Term]
                 val mcatches = lcatches.toMtrees[m.Case]
                 val mfinally = lfinally.toMtreeopt[m.Term]
-                m.Term.TryWithCases(mexpr, mcatches, mfinally)
+                m.Term.Try(mexpr, mcatches, mfinally)
 
               case l.TermFunction(lparams, lbody) =>
                 val mparams = lparams.toMtrees[m.Term.Param]
