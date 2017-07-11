@@ -164,7 +164,7 @@ trait ToMtree { self: Converter =>
               case l.TermParamDef(lmods, lname, ltpt, ldefault) =>
                 val mmods = lmods.toMtrees[m.Mod]
                 val mname = lname.toMtree[m.Name]
-                val mtpt = ltpt.toMtreeopt[m.Type.Arg]
+                val mtpt = ltpt.toMtreeopt[m.Type]
                 val mdefault = ldefault.toMtreeopt[m.Term]
                 m.Term.Param(mmods, mname, mtpt, mdefault)
 
@@ -210,7 +210,7 @@ trait ToMtree { self: Converter =>
                 m.Type.ApplyInfix(mlhs, mop, mrhs)
 
               case l.TypeFunction(lparams, lres) =>
-                val mparams = lparams.toMtrees[m.Type.Arg]
+                val mparams = lparams.toMtrees[m.Type]
                 val mres = lres.toMtree[m.Type]
                 m.Type.Function(mparams, mres)
 
